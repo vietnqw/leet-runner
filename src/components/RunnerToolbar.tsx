@@ -1,5 +1,6 @@
 import React from 'react';
 import { CHECKERS } from '../runner/checkers';
+import './RunnerToolbar.css';
 
 interface RunnerToolbarProps {
   methodName: string;
@@ -24,78 +25,85 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
   onStop,
   isRunning
 }) => {
+  const runLabel = isRunning ? 'Stop' : 'Run';
   return (
-    <div style={{
-      padding: '8px',
-      borderBottom: '1px solid #333',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      backgroundColor: '#252526'
-    }}>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ fontSize: '10px', color: '#aaa' }}>Language</label>
-        <select disabled style={{ background: '#333', color: '#fff', border: '1px solid #444' }}>
+    <div className="runnerToolbar">
+      <div className="runnerToolbar__brand">LeetRunner</div>
+
+      <div className="runnerToolbar__divider" />
+
+      <div className="runnerToolbar__group" aria-label="Language">
+        <span className="runnerToolbar__chipLabel">Language:</span>
+        <select className="runnerToolbar__select runnerToolbar__selectSm" disabled>
           <option>Python 3</option>
         </select>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ fontSize: '10px', color: '#aaa' }}>Method</label>
+      <div className="runnerToolbar__group" aria-label="Method">
+        <span className="runnerToolbar__chipLabel">Method:</span>
         <input
+          className="runnerToolbar__input runnerToolbar__inputSm"
           type="text"
           value={methodName}
           onChange={(e) => onMethodNameChange(e.target.value)}
-          placeholder="e.g. solve"
-          style={{
-            background: '#3c3c3c',
-            color: '#fff',
-            border: '1px solid #444',
-            padding: '2px 4px'
-          }}
+          placeholder="method (e.g. twoSum)"
         />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <label style={{ fontSize: '10px', color: '#aaa' }}>Checker</label>
+      <div className="runnerToolbar__group" aria-label="Checker">
+        <span className="runnerToolbar__chipLabel">Checker:</span>
         <select
+          className="runnerToolbar__select"
           value={checkerId}
           onChange={(e) => onCheckerChange(e.target.value)}
-          style={{ background: '#3c3c3c', color: '#fff', border: '1px solid #444', padding: '2px 4px' }}
         >
-          {CHECKERS.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+          {CHECKERS.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </select>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: '2px' }}>
-         <label style={{ fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <input 
-                type="checkbox" 
-                checked={vimMode} 
-                onChange={(e) => onVimModeChange(e.target.checked)} 
-            />
-            <span style={{ color: '#aaa' }}>Vim Mode</span>
-         </label>
+      <div className="runnerToolbar__spacer" />
+
+      <div className="runnerToolbar__toggle" title="Toggle Vim mode">
+        <span>Vim</span>
+        <div
+          className="runnerToolbar__switch"
+          data-on={vimMode ? 'true' : 'false'}
+          role="switch"
+          aria-checked={vimMode}
+          tabIndex={0}
+          onClick={() => onVimModeChange(!vimMode)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onVimModeChange(!vimMode);
+            }
+          }}
+        >
+          <div className="runnerToolbar__switchKnob" />
+        </div>
       </div>
 
-      <div style={{ flex: 1 }} />
-
       <button
+        className={[
+          'runnerToolbar__button',
+          isRunning ? 'runnerToolbar__buttonDanger' : 'runnerToolbar__buttonPrimary',
+        ].join(' ')}
         onClick={isRunning ? onStop : onRun}
-        style={{
-          background: isRunning ? '#d9534f' : '#4CAF50',
-          color: 'white',
-          border: 'none',
-          padding: '5px 15px',
-          cursor: 'pointer',
-          borderRadius: '3px'
-        }}
+        title={isRunning ? 'Stop' : 'Run (Ctrl+Enter)'}
       >
-        {isRunning ? 'Stop' : 'Run'}
+        {isRunning ? (
+          runLabel
+        ) : (
+          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
+            <span>{runLabel}</span>
+            <span className="runnerToolbar__kbd">Ctrl+Enter</span>
+          </span>
+        )}
       </button>
     </div>
   );
 };
-

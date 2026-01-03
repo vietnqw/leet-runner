@@ -1,0 +1,168 @@
+.runnerToolbar {
+  height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 20, 20, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  color-scheme: dark;
+}
+
+.runnerToolbar__brand {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+
+.runnerToolbar__spacer {
+  flex: 1;
+}
+
+.runnerToolbar__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.runnerToolbar__chipLabel {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.runnerToolbar__select,
+.runnerToolbar__input {
+  height: 24px;
+  background: transparent;
+  color: #d6d6d6;
+  border: none;
+  outline: none;
+  font-size: 12px;
+}
+
+.runnerToolbar__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.runnerToolbar__select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.runnerToolbar__input {
+  width: 116px;
+}
+
+.runnerToolbar__select {
+  width: 150px;
+}
+
+.runnerToolbar__inputSm {
+  width: 96px;
+}
+
+.runnerToolbar__selectSm {
+  width: 120px;
+}
+
+.runnerToolbar__select option {
+  background: #141414;
+  color: #e6e6e6;
+}
+
+.runnerToolbar__divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.runnerToolbar__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #a8a8a8;
+  font-size: 12px;
+  user-select: none;
+}
+
+.runnerToolbar__switch {
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  position: relative;
+  cursor: pointer;
+}
+
+.runnerToolbar__switchKnob {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.runnerToolbar__switch[data-on='true'] {
+  background: rgba(76, 175, 80, 0.22);
+  border-color: rgba(76, 175, 80, 0.35);
+}
+
+.runnerToolbar__switch[data-on='true'] .runnerToolbar__switchKnob {
+  transform: translateX(16px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.runnerToolbar__button {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.runnerToolbar__button:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.runnerToolbar__buttonPrimary {
+  background: rgba(76, 175, 80, 0.85);
+  border-color: rgba(76, 175, 80, 0.9);
+}
+
+.runnerToolbar__buttonPrimary:hover {
+  background: rgba(76, 175, 80, 0.95);
+}
+
+.runnerToolbar__buttonDanger {
+  background: rgba(239, 83, 80, 0.85);
+  border-color: rgba(239, 83, 80, 0.9);
+}
+
+.runnerToolbar__buttonDanger:hover {
+  background: rgba(239, 83, 80, 0.95);
+}
+
+.runnerToolbar__kbd {
+  font-size: 11px;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+

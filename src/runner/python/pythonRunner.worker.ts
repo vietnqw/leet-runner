@@ -119,18 +119,7 @@ self.onmessage = async (e) => {
       const executionTime = endTime - startTime;
 
       // Combine stdout/stderr
-      const output = [...stdoutBuffer, ...stderrBuffer].join('');
-      // Wait, where do we put output? In the error or a separate field?
-      // The `TestResult` has `actual` and `error`. 
-      // I should append stdout to actual or error?
-      // Usually stdout is useful for debug.
-      // I'll add `output` to `TestResult` in `types.ts` later.
-      // For now, I'll append it to error if error, or just ignore?
-      // No, user wants stdout.
-      // I'll modify TestResult in the next step or assume it exists.
-      // I'll append it to the error message or prepend it.
-      
-      const combinedOutput = output ? `\n--- Output ---\n${output}` : '';
+      const output = [...stdoutBuffer, ...stderrBuffer].join('').trim();
 
       if (result.error) {
          postMessage({
@@ -139,7 +128,7 @@ self.onmessage = async (e) => {
             result: { 
                 passed: false, 
                 actual: '', 
-                output: combinedOutput,
+                output: output || undefined,
                 error: result.error, 
                 executionTime 
             }
@@ -151,7 +140,7 @@ self.onmessage = async (e) => {
             result: { 
                 passed: true, 
                 actual: result.actual, 
-                output: combinedOutput,
+                output: output || undefined,
                 executionTime
             }
          });

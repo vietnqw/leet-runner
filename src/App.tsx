@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { MonacoCodeEditor } from './components/MonacoCodeEditor';
 import { RunnerToolbar } from './components/RunnerToolbar';
 import { TestCasesPanel } from './components/TestCasesPanel';
-import { RunResultsPanel } from './components/RunResultsPanel';
 import { workspaceStorage } from './storage/workspaceStorage';
 import type { TestCase, TestResult } from './types';
 import { PythonRunnerClient } from './runner/python/pythonRunnerClient';
@@ -23,7 +22,6 @@ function App() {
     try {
       runnerRef.current = new PythonRunnerClient();
     } catch (e) {
-      // If the Worker fails to initialize, don't blank the UI.
       console.error('Failed to initialize Python runner', e);
       runnerRef.current = null;
     }
@@ -73,7 +71,6 @@ function App() {
         setResults(prev => {
            const { caseId, result } = event;
            const tc = testCases.find(t => t.id === caseId);
-           // Calculate pass/fail using checker
            if (tc && !result.error) {
               const checker = getChecker(checkerId);
               const checkRes = checker.check(result.actual, tc.expected);
@@ -93,13 +90,33 @@ function App() {
     });
   };
 
+  // Ctrl/Cmd + Enter => Run from anywhere (editor/testcases/etc)
+  const runRef = useRef(handleRun);
+  runRef.current = handleRun;
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runRef.current();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const handleStop = () => {
     runnerRef.current?.terminate();
     setIsRunning(false);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh', 
+      width: '100vw',
+      background: '#0a0a0a',
+    }}>
       <RunnerToolbar
         methodName={methodName}
         onMethodNameChange={handleMethodChange}
@@ -111,17 +128,60 @@ function App() {
         onStop={handleStop}
         isRunning={isRunning}
       />
-      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-        {/* Editor Section (Left) */}
-        <div style={{ flex: 1, borderRight: '1px solid #333' }}>
-          <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} />
+      
+      {/* Main Content Area */}
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column',
+        minHeight: 0,
+        padding: '12px',
+        gap: '18px',
+        maxWidth: '1200px',
+        width: '100%',
+        margin: '0 auto'
+      }}>
+        {/* Top gutter so the editor card never touches the toolbar */}
+        <div style={{ flex: '0 0 10px' }} />
+
+        {/* Editor Section */}
+        <div style={{ 
+          flex: 1.75,
+          minHeight: 0,
+          borderRadius: '8px',
+          overflow: 'hidden',
+          boxShadow: '0 10px 28px rgba(0, 0, 0, 0.55)',
+          border: '1px solid rgba(255, 255, 255, 0.10)',
+          background: '#1e1e1e',
+          display: 'flex',
+          flexDirection: 'column',
+          paddingTop: '12px',
+        }}>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} onRun={handleRun} />
+          </div>
         </div>
 
-        {/* Sidebar Section (Right) */}
-        <div style={{ width: '400px', backgroundColor: '#252526', padding: '10px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-          <TestCasesPanel testCases={testCases} onChange={handleTestCasesChange} />
-          <RunResultsPanel testCases={testCases} results={results} />
+        {/* Test Cases Section - Unified with Results */}
+        <div style={{ 
+          flex: 0.75,
+          minHeight: 0,
+          background: '#141414',
+          borderRadius: '8px',
+          padding: '14px',
+          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.25)',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
+          overflowY: 'auto'
+        }}>
+          <TestCasesPanel 
+            testCases={testCases} 
+            onChange={handleTestCasesChange}
+            results={results}
+          />
         </div>
+
+        {/* Bottom gutter so the test card never touches the viewport bottom */}
+        <div style={{ flex: '0 0 18px' }} />
       </div>
     </div>
   );
