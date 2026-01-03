@@ -98,7 +98,6 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
           const tcResult = results[tc.id];
           const isPassed = tcResult && tcResult.passed && !tcResult.error;
           const isFailed = tcResult && (!tcResult.passed || tcResult.error);
-          const isHovering = hoveredTab === index;
           
           // Determine tab color
           let tabColor = '#888'; // default
