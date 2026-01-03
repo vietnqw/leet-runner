@@ -77,11 +77,20 @@ self.onmessage = async (e) => {
       // Better: Report error as a global error or fail all cases.
       // We will loop through cases and report the error for each.
       const errorMsg = err.toString();
+      const combinedParts = [...stdoutBuffer, ...stderrBuffer];
+      const joined = combinedParts.join('');
+      const outputRaw =
+        !joined.includes('\n') &&
+        !joined.includes('\r') &&
+        combinedParts.length > 1
+          ? combinedParts.join('\n')
+          : joined;
+      const output = outputRaw.replace(/\r\n/g, '\n').trimEnd();
       testCases.forEach((tc: any) => {
         postMessage({
             type: 'result',
             caseId: tc.id,
-            result: { passed: false, actual: '', error: errorMsg, executionTime: 0 }
+            result: { passed: false, actual: '', output: output || undefined, error: errorMsg, executionTime: 0 }
         });
       });
       postMessage({ type: 'finished' });

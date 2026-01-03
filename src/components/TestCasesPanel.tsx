@@ -98,6 +98,7 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
           const tcResult = results[tc.id];
           const isPassed = tcResult && tcResult.passed && !tcResult.error;
           const isFailed = tcResult && (!tcResult.passed || tcResult.error);
+          const isHovering = hoveredTab === index;
           
           // Determine tab color
           let tabColor = '#888'; // default
@@ -112,7 +113,7 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
               onMouseEnter={() => setHoveredTab(index)}
               onMouseLeave={() => setHoveredTab((prev) => (prev === index ? null : prev))}
             >
-              {/* Floating close icon: top-left, slightly above the tab */}
+              {/* Floating close icon: top-right, slightly above the tab */}
               <span
                 role="button"
                 aria-label={`Remove case ${index + 1}`}
@@ -139,36 +140,47 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
                   border: '1px solid rgba(255, 255, 255, 0.22)',
                   zIndex: 2,
                   opacity: hoveredTab === index ? 1 : 0,
-                  transform: hoveredTab === index ? 'translateY(0px)' : 'translateY(2px)',
                   pointerEvents: hoveredTab === index ? 'auto' : 'none',
                   cursor: 'pointer',
                   transition:
-                    'opacity 140ms ease, transform 140ms ease, color 140ms ease, background 140ms ease, border-color 140ms ease',
+                    'opacity 140ms ease, color 140ms ease, background 140ms ease, border-color 140ms ease',
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLSpanElement;
                   el.style.color = '#ef5350';
                   el.style.background = '#101010';
                   el.style.borderColor = 'rgba(239, 83, 80, 0.55)';
-                  el.style.transform = 'translateY(0px)';
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLSpanElement;
                   el.style.color = '#b8b8b8';
                   el.style.background = '#141414';
                   el.style.borderColor = 'rgba(255, 255, 255, 0.22)';
-                  el.style.transform = 'translateY(0px)';
                 }}
               >
-                ×
+                <span style={{ position: 'relative', top: '-0.5px' }}>×</span>
               </span>
 
               <button
                 onClick={() => setActiveTab(index)}
                 style={{
-                  background: activeTab === index ? '#2a2a2a' : 'transparent',
-                  border: 'none',
-                  color: tabColor,
+                  background:
+                    activeTab === index
+                      ? '#2a2a2a'
+                      : hoveredTab === index && !isPassed && !isFailed
+                        ? '#222'
+                        : 'transparent',
+                  border: '1px solid',
+                  borderColor:
+                    activeTab === index
+                      ? 'rgba(255, 255, 255, 0.16)'
+                      : hoveredTab === index
+                        ? 'rgba(255, 255, 255, 0.22)'
+                        : 'transparent',
+                  color:
+                    activeTab !== index && hoveredTab === index && !isPassed && !isFailed
+                      ? '#aaa'
+                      : tabColor,
                   cursor: 'pointer',
                   padding: '8px 14px',
                   whiteSpace: 'nowrap',
@@ -180,18 +192,6 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
                   alignItems: 'center',
                   gap: '6px',
                 }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== index && !isPassed && !isFailed) {
-                    e.currentTarget.style.background = '#222';
-                    e.currentTarget.style.color = '#aaa';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== index && !isPassed && !isFailed) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#888';
-                  }
-                }}
               >
                 Case {index + 1}
               </button>
@@ -202,7 +202,7 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
           onClick={handleAddCase} 
           style={{ 
             background: 'transparent',
-            border: 'none',
+            border: '1px solid transparent',
             color: '#666',
             cursor: 'pointer',
             padding: '8px 14px',
@@ -214,10 +214,12 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
           onMouseEnter={(e) => {
             e.currentTarget.style.background = '#222';
             e.currentTarget.style.color = '#999';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.22)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
             e.currentTarget.style.color = '#666';
+            e.currentTarget.style.borderColor = 'transparent';
           }}
         >
           +
@@ -281,10 +283,10 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
                     <span style={{
                       fontSize: '10px',
                       fontWeight: '600',
-                      color: result.passed && !result.error ? '#4CAF50' : '#ef5350',
+                      color: result.error ? '#ef5350' : (result.passed ? '#4CAF50' : '#ef5350'),
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      background: result.passed && !result.error ? 'rgba(76, 175, 80, 0.1)' : 'rgba(239, 83, 80, 0.1)',
+                      background: result.error ? 'rgba(239, 83, 80, 0.1)' : (result.passed ? 'rgba(76, 175, 80, 0.1)' : 'rgba(239, 83, 80, 0.1)'),
                     }}>
                       {result.error ? 'ERROR' : (result.passed ? 'PASS' : 'FAIL')}
                     </span>
@@ -292,12 +294,31 @@ export const TestCasesPanel: React.FC<TestCasesPanelProps> = ({
                 </div>
                 <div style={{
                   ...outputBoxStyle,
-                  background: result.error ? 'rgba(239, 83, 80, 0.05)' : (result.passed ? 'rgba(76, 175, 80, 0.05)' : 'rgba(239, 83, 80, 0.05)'),
-                  border: `1px solid ${result.error ? 'rgba(239, 83, 80, 0.2)' : (result.passed ? 'rgba(76, 175, 80, 0.2)' : 'rgba(239, 83, 80, 0.2)')}`,
-                  color: result.error ? '#ef5350' : (result.passed ? '#4CAF50' : '#ef5350')
+                  background: result.passed ? 'rgba(76, 175, 80, 0.05)' : 'rgba(239, 83, 80, 0.05)',
+                  border: `1px solid ${result.passed ? 'rgba(76, 175, 80, 0.2)' : 'rgba(239, 83, 80, 0.2)'}`,
+                  color: result.passed ? '#4CAF50' : '#ef5350'
                 }}>
-                  {result.error || result.actual || '(empty)'}
+                  {result.actual || '(empty)'}
                 </div>
+
+                {(result.checkerDiagnostics || result.error) && (
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      marginBottom: '16px',
+                      fontFamily:
+                        '"SF Mono", "Monaco", "Cascadia Code", "Roboto Mono", monospace',
+                      fontSize: '13px',
+                      lineHeight: 1.55,
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      color: result.passed ? '#4CAF50' : '#ef5350',
+                      opacity: 0.98,
+                    }}
+                  >
+                    {result.error ? result.error : `Checker: ${result.checkerDiagnostics}`}
+                  </div>
+                )}
               </div>
             </>
           )}

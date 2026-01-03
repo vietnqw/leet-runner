@@ -75,9 +75,7 @@ function App() {
               const checker = getChecker(checkerId);
               const checkRes = checker.check(result.actual, tc.expected);
               result.passed = checkRes.passed;
-              if (checkRes.diagnostics) {
-                  result.error = (result.error ? result.error + '\n' : '') + `Checker: ${checkRes.diagnostics}`;
-              }
+              result.checkerDiagnostics = checkRes.diagnostics;
            }
            return { ...prev, [caseId]: result };
         });
@@ -101,10 +99,10 @@ function App() {
       if (!isRunCombo) return;
 
       // Use capture so Monaco (and other widgets) can't swallow the event.
-      e.preventDefault();
+        e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
-      runRef.current();
+        runRef.current();
     };
     const opts: AddEventListenerOptions = { capture: true };
     window.addEventListener('keydown', onKeyDown, opts);
