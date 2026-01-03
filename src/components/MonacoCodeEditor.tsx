@@ -64,6 +64,31 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
       // Cleanup on unmount handled by ref check or parent unmount
     };
   }, [editor, vimMode]);
+
+  // When toggling the Vim status bar, Monaco often doesn't recompute its layout
+  // immediately, which can cause the status bar to be partially hidden until reload.
+  useEffect(() => {
+    if (!editor) return;
+    // Wait for the status bar DOM to mount/unmount, then force a relayout.
+    const raf = requestAnimationFrame(() => {
+      try {
+        editor.layout();
+      } catch {
+        // ignore
+      }
+    });
+    const t = window.setTimeout(() => {
+      try {
+        editor.layout();
+      } catch {
+        // ignore
+      }
+    }, 0);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(t);
+    };
+  }, [editor, vimMode]);
   
   // Cleanup on unmount
   useEffect(() => {
@@ -75,8 +100,16 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
   }, []);
 
   return (
-    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1 }}>
+    <div
+      style={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+      }}
+    >
+      <div style={{ flex: 1, minHeight: 0 }}>
         <Editor
           height="100%"
           defaultLanguage={language}
