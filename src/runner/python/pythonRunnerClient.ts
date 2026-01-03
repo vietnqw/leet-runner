@@ -1,4 +1,4 @@
-import { LanguageRunner, RunRequest, RunnerEvent } from '../LanguageRunner';
+import type { LanguageRunner, RunRequest, RunnerEvent } from '../LanguageRunner';
 
 export class PythonRunnerClient implements LanguageRunner {
   private worker: Worker | null = null;

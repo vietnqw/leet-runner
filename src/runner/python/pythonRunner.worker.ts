@@ -1,16 +1,25 @@
-import { loadPyodide, PyodideInterface } from 'pyodide';
 import { PYTHON_HARNESS } from './harness';
+
+type PyodideInterface = any;
 
 let pyodide: PyodideInterface | null = null;
 let pyodideReadyPromise: Promise<void> | null = null;
+let loadPyodideFn: ((opts: any) => Promise<PyodideInterface>) | null = null;
 
 const initPyodide = async () => {
   if (pyodideReadyPromise) return pyodideReadyPromise;
 
   pyodideReadyPromise = (async () => {
     try {
-      pyodide = await loadPyodide({
-        indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
+      // IMPORTANT:
+      // Don't bundle the `pyodide` npm package into Vite. It pulls in node:* shims and can break in-browser.
+      // Instead, dynamically import Pyodide's browser module from CDN inside the worker.
+      if (!loadPyodideFn) {
+        const mod: any = await import('https://cdn.jsdelivr.net/pyodide/v0.29.0/full/pyodide.mjs');
+        loadPyodideFn = mod.loadPyodide;
+      }
+      pyodide = await loadPyodideFn!({
+        indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.29.0/full/',
       });
       // Load any packages if needed (e.g. numpy?) - None for MVP
       postMessage({ type: 'loaded' });

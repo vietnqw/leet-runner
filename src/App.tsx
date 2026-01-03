@@ -4,7 +4,7 @@ import { RunnerToolbar } from './components/RunnerToolbar';
 import { TestCasesPanel } from './components/TestCasesPanel';
 import { RunResultsPanel } from './components/RunResultsPanel';
 import { workspaceStorage } from './storage/workspaceStorage';
-import { TestCase, TestResult } from './types';
+import type { TestCase, TestResult } from './types';
 import { PythonRunnerClient } from './runner/python/pythonRunnerClient';
 import { getChecker } from './runner/checkers';
 
@@ -20,7 +20,13 @@ function App() {
   const runnerRef = useRef<PythonRunnerClient | null>(null);
 
   useEffect(() => {
-    runnerRef.current = new PythonRunnerClient();
+    try {
+      runnerRef.current = new PythonRunnerClient();
+    } catch (e) {
+      // If the Worker fails to initialize, don't blank the UI.
+      console.error('Failed to initialize Python runner', e);
+      runnerRef.current = null;
+    }
     return () => {
       runnerRef.current?.terminate();
     };

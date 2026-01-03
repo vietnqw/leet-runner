@@ -1,5 +1,5 @@
 import React from 'react';
-import { TestCase, TestResult } from '../types';
+import type { TestCase, TestResult } from '../types';
 
 interface RunResultsPanelProps {
   testCases: TestCase[];

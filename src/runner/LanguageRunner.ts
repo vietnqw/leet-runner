@@ -1,4 +1,4 @@
-import { TestCase, TestResult } from '../types';
+import type { TestCase, TestResult } from '../types';
 
 export interface RunRequest {
   code: string;

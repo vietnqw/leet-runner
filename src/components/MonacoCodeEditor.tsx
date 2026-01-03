@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Editor, { OnMount, loader } from '@monaco-editor/react';
+import Editor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
-// @ts-ignore
-import { initVimMode } from 'monaco-vim';
 
 // Configure loader to use local monaco instance instead of CDN
 // This ensures monaco-vim and the editor use the same instance
@@ -25,7 +23,7 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
   const vimStatusRef = useRef<HTMLDivElement>(null);
   const vimInstanceRef = useRef<any>(null);
 
-  const handleEditorDidMount: OnMount = (editorInstance, monaco) => {
+  const handleEditorDidMount = (editorInstance: any) => {
     setEditor(editorInstance);
     editorInstance.focus();
   };
@@ -36,7 +34,21 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
     if (vimMode) {
       if (!vimInstanceRef.current) {
         try {
-            vimInstanceRef.current = initVimMode(editor, vimStatusRef.current);
+            // Lazy-load monaco-vim so a bundler/runtime issue doesn't blank the whole app.
+            import('monaco-vim')
+              .then((mod: any) => {
+                const init = mod?.initVimMode;
+                if (typeof init !== 'function') {
+                  throw new Error('monaco-vim: initVimMode not found');
+                }
+                vimInstanceRef.current = init(editor, vimStatusRef.current);
+              })
+              .catch((e: any) => {
+                console.error('Failed to load/init vim mode', e);
+                if (vimStatusRef.current) {
+                  vimStatusRef.current.textContent = 'Vim mode failed to load';
+                }
+              });
         } catch (e) {
             console.error("Failed to init vim mode", e);
         }

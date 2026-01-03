@@ -1,4 +1,4 @@
-import { OutputChecker, CheckResult } from './types';
+import type { OutputChecker, CheckResult } from './types';
 
 export const JsonUnorderedListChecker: OutputChecker = {
   id: 'json_unordered_list',

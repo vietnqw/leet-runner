@@ -2,7 +2,7 @@ import { ExactTextChecker } from './exactText';
 import { JsonDeepEqualChecker } from './jsonDeepEqual';
 import { JsonUnorderedListChecker } from './jsonUnorderedList';
 import { JsonUnorderedListOfListsChecker } from './jsonUnorderedListOfLists';
-import { OutputChecker } from './types';
+import type { OutputChecker } from './types';
 
 export const CHECKERS: OutputChecker[] = [
   ExactTextChecker,

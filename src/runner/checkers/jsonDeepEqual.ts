@@ -1,4 +1,4 @@
-import { OutputChecker, CheckResult } from './types';
+import type { OutputChecker, CheckResult } from './types';
 
 // Simple deep equal implementation
 function deepEqual(a: any, b: any): boolean {
