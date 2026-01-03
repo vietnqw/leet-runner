@@ -1,0 +1,53 @@
+name: Deploy to vietngoquang.com/leet-runner
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vietnqw-github-io
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Checkout vietnqw.github.io
+        uses: actions/checkout@v4
+        with:
+          repository: vietnqw/vietnqw.github.io
+          token: ${{ secrets.GH_PAGES_TOKEN }}
+          path: pages
+
+      - name: Copy dist into pages/leet-runner
+        run: |
+          rm -rf pages/leet-runner
+          mkdir -p pages/leet-runner
+          cp -a dist/. pages/leet-runner/
+
+      - name: Commit & push
+        run: |
+          cd pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add leet-runner
+          git commit -m "Deploy leet-runner" || echo "No changes to commit"
+          git push
+
+
