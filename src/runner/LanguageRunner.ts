@@ -9,10 +9,10 @@ export interface RunRequest {
 export type RunnerEvent = 
   | { type: 'result'; caseId: string; result: TestResult }
   | { type: 'error'; error: string }
-  | { type: 'loaded' };
+  | { type: 'loaded' }
+  | { type: 'finished' };
 
 export interface LanguageRunner {
   run(request: RunRequest, onEvent: (event: RunnerEvent) => void): void;
   terminate(): void;
 }
-

@@ -1,8 +1,11 @@
 import React from 'react';
+import { CHECKERS } from '../runner/checkers';
 
 interface RunnerToolbarProps {
   methodName: string;
   onMethodNameChange: (name: string) => void;
+  checkerId: string;
+  onCheckerChange: (id: string) => void;
   onRun: () => void;
   onStop: () => void;
   isRunning: boolean;
@@ -11,6 +14,8 @@ interface RunnerToolbarProps {
 export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
   methodName,
   onMethodNameChange,
+  checkerId,
+  onCheckerChange,
   onRun,
   onStop,
   isRunning
@@ -45,6 +50,19 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
             padding: '2px 4px'
           }}
         />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <label style={{ fontSize: '10px', color: '#aaa' }}>Checker</label>
+        <select
+          value={checkerId}
+          onChange={(e) => onCheckerChange(e.target.value)}
+          style={{ background: '#3c3c3c', color: '#fff', border: '1px solid #444', padding: '2px 4px' }}
+        >
+          {CHECKERS.map(c => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
       </div>
 
       <div style={{ flex: 1 }} />

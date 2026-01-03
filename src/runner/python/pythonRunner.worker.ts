@@ -121,7 +121,8 @@ self.onmessage = async (e) => {
             result: { 
                 passed: false, 
                 actual: '', 
-                error: result.error + combinedOutput, 
+                output: combinedOutput,
+                error: result.error, 
                 executionTime 
             }
          });
@@ -130,15 +131,9 @@ self.onmessage = async (e) => {
             type: 'result',
             caseId: tc.id,
             result: { 
-                passed: true, // This just means execution didn't crash
-                actual: result.actual, // Raw actual output (string)
-                error: combinedOutput ? combinedOutput : undefined, // Put stdout in error field for now? Or actual?
-                // Actually I should verify the result here? 
-                // Plan says: "Evaluate with selected checker... Return per-testcase: pass/fail... checker diagnostics".
-                // The worker doesn't know the checker logic if it's in JS.
-                // The plan says "Worker returns... actual display".
-                // So the worker just returns `actual`. The UI/Client calculates pass/fail.
-                // So `passed: true` here means "executed successfully".
+                passed: true, 
+                actual: result.actual, 
+                output: combinedOutput,
                 executionTime
             }
          });
@@ -146,6 +141,7 @@ self.onmessage = async (e) => {
     }
     
     runCase.destroy();
+    postMessage({ type: 'finished' });
   }
 };
 

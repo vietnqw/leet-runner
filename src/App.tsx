@@ -1,15 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MonacoCodeEditor } from './components/MonacoCodeEditor';
 import { RunnerToolbar } from './components/RunnerToolbar';
 import { TestCasesPanel } from './components/TestCasesPanel';
+import { RunResultsPanel } from './components/RunResultsPanel';
 import { workspaceStorage } from './storage/workspaceStorage';
-import { TestCase } from './types';
+import { TestCase, TestResult } from './types';
+import { PythonRunnerClient } from './runner/python/pythonRunnerClient';
+import { getChecker } from './runner/checkers';
 
 function App() {
   const [code, setCode] = useState(workspaceStorage.loadCode());
   const [methodName, setMethodName] = useState(workspaceStorage.loadMethod());
+  const [checkerId, setCheckerId] = useState(workspaceStorage.loadChecker());
   const [testCases, setTestCases] = useState<TestCase[]>(workspaceStorage.loadTestCases([]));
+  const [results, setResults] = useState<Record<string, TestResult>>({});
   const [isRunning, setIsRunning] = useState(false);
+
+  const runnerRef = useRef<PythonRunnerClient | null>(null);
+
+  useEffect(() => {
+    runnerRef.current = new PythonRunnerClient();
+    return () => {
+      runnerRef.current?.terminate();
+    };
+  }, []);
 
   const handleCodeChange = (newCode: string | undefined) => {
     if (newCode !== undefined) {
@@ -22,6 +36,11 @@ function App() {
     setMethodName(name);
     workspaceStorage.saveMethod(name);
   };
+  
+  const handleCheckerChange = (id: string) => {
+    setCheckerId(id);
+    workspaceStorage.saveChecker(id);
+  };
 
   const handleTestCasesChange = (newCases: TestCase[]) => {
     setTestCases(newCases);
@@ -29,12 +48,41 @@ function App() {
   };
 
   const handleRun = () => {
+    if (isRunning) return;
     setIsRunning(true);
-    // TODO: implement run logic
-    setTimeout(() => setIsRunning(false), 1000);
+    setResults({});
+    
+    runnerRef.current?.run({
+      code,
+      methodName,
+      testCases
+    }, (event) => {
+      if (event.type === 'result') {
+        setResults(prev => {
+           const { caseId, result } = event;
+           const tc = testCases.find(t => t.id === caseId);
+           // Calculate pass/fail using checker
+           if (tc && !result.error) {
+              const checker = getChecker(checkerId);
+              const checkRes = checker.check(result.actual, tc.expected);
+              result.passed = checkRes.passed;
+              if (checkRes.diagnostics) {
+                  result.error = (result.error ? result.error + '\n' : '') + `Checker: ${checkRes.diagnostics}`;
+              }
+           }
+           return { ...prev, [caseId]: result };
+        });
+      } else if (event.type === 'finished') {
+        setIsRunning(false);
+      } else if (event.type === 'error') {
+        alert(`Runtime Error: ${event.error}`);
+        setIsRunning(false);
+      }
+    });
   };
 
   const handleStop = () => {
+    runnerRef.current?.terminate();
     setIsRunning(false);
   };
 
@@ -43,6 +91,8 @@ function App() {
       <RunnerToolbar
         methodName={methodName}
         onMethodNameChange={handleMethodChange}
+        checkerId={checkerId}
+        onCheckerChange={handleCheckerChange}
         onRun={handleRun}
         onStop={handleStop}
         isRunning={isRunning}
@@ -54,8 +104,9 @@ function App() {
         </div>
 
         {/* Sidebar Section (Right) */}
-        <div style={{ width: '400px', backgroundColor: '#252526', padding: '10px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '400px', backgroundColor: '#252526', padding: '10px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
           <TestCasesPanel testCases={testCases} onChange={handleTestCasesChange} />
+          <RunResultsPanel testCases={testCases} results={results} />
         </div>
       </div>
     </div>
