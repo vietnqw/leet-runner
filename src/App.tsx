@@ -117,13 +117,7 @@ function App() {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      height: '100vh', 
-      width: '100vw',
-      background: '#0a0a0a',
-    }}>
+    <div className="app-shell">
       <RunnerToolbar
         methodName={methodName}
         onMethodNameChange={handleMethodChange}
@@ -137,49 +131,16 @@ function App() {
       />
       
       {/* Main Content Area */}
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
-        flexDirection: 'column',
-        minHeight: 0,
-        padding: '12px',
-        gap: '18px',
-        maxWidth: '1200px',
-        width: '100%',
-        margin: '0 auto'
-      }}>
-        {/* Top gutter so the editor card never touches the toolbar */}
-        <div style={{ flex: '0 0 10px' }} />
+      <div className="app-main">
+        <div className="app-spacer" />
 
-        {/* Editor Section */}
-        <div style={{ 
-          flex: 1.75,
-          minHeight: 0,
-          borderRadius: '8px',
-          overflow: 'hidden',
-          boxShadow: '0 10px 28px rgba(0, 0, 0, 0.55)',
-          border: '1px solid rgba(255, 255, 255, 0.10)',
-          background: '#1e1e1e',
-          display: 'flex',
-          flexDirection: 'column',
-          paddingTop: '12px',
-        }}>
-          <div style={{ flex: 1, minHeight: 0 }}>
+        <div className="card card--editor">
+          <div className="card__body">
             <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} />
           </div>
         </div>
 
-        {/* Test Cases Section - Unified with Results */}
-        <div style={{ 
-          flex: 0.75,
-          minHeight: 0,
-          background: '#141414',
-          borderRadius: '8px',
-          padding: '14px',
-          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.25)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          overflowY: 'auto'
-        }}>
+        <div className="card card--panel">
           <TestCasesPanel 
             testCases={testCases} 
             onChange={handleTestCasesChange}
@@ -187,8 +148,7 @@ function App() {
           />
         </div>
 
-        {/* Bottom gutter so the test card never touches the viewport bottom */}
-        <div style={{ flex: '0 0 18px' }} />
+        <div className="app-spacer app-spacer--bottom" />
       </div>
     </div>
   );

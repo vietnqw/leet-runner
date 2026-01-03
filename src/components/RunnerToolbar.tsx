@@ -28,7 +28,7 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
   const runLabel = isRunning ? 'Stop' : 'Run';
   return (
     <div className="runnerToolbar">
-      <div className="runnerToolbar__brand">LeetRunner</div>
+      <div className="runnerToolbar__brand">Leet Runner</div>
 
       <div className="runnerToolbar__divider" />
 
@@ -98,9 +98,9 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
         {isRunning ? (
           runLabel
         ) : (
-          <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             <span>{runLabel}</span>
-            <span className="runnerToolbar__kbd">Ctrl+Enter</span>
+            <span className="runnerToolbar__kbd">⌃↵</span>
           </span>
         )}
       </button>

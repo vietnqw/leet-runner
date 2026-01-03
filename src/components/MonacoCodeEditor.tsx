@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Editor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
-import './VimStatusBar.css';
 
 // Configure loader to use local monaco instance instead of CDN
 // This ensures monaco-vim and the editor use the same instance
@@ -64,36 +63,23 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
             }
             vimInstanceRef.current = init(editor, vimStatusRef.current);
 
-            // Setup observer to toggle colors based on mode text (Normal/Insert/Visual)
-            const node = vimStatusRef.current;
-            if (node) {
-              const observer = new MutationObserver(() => {
-                const text = node.textContent || '';
-                let mode = 'normal';
-                if (text.includes('INSERT')) mode = 'insert';
-                else if (text.includes('VISUAL')) mode = 'visual';
-                else if (text.includes('REPLACE')) mode = 'replace';
-                
-                if (node.getAttribute('data-mode') !== mode) {
-                  node.setAttribute('data-mode', mode);
-                }
-              });
-              observer.observe(node, {
-                childList: true,
-                subtree: true,
-                characterData: true
-              });
-              
-              // Seed initial text if empty
-              requestAnimationFrame(() => {
-                const modeSpan = node.querySelector('span');
-                if (modeSpan && !modeSpan.textContent) {
-                  modeSpan.textContent = '--NORMAL--';
-                }
-                // Force initial attribute
-                node.setAttribute('data-mode', 'normal');
-              });
-            }
+            // monaco-vim shows mode text only after it emits "vim-mode-change".
+            // On toggling Vim ON, that event can occasionally be delayed, leaving the bar blank.
+            // If it's still blank, seed the mode text so users immediately see "--NORMAL--".
+            requestAnimationFrame(() => {
+              const node = vimStatusRef.current;
+              if (!node) return;
+
+              // monaco-vim inserts the mode as the first child <span>
+              const modeSpan = node.querySelector('span');
+              if (modeSpan && !modeSpan.textContent) {
+                modeSpan.textContent = '--NORMAL--';
+              }
+
+              // monaco-vim sets display:block; re-apply our intended layout.
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+            });
           })
           .catch((e: any) => {
             console.error('Failed to load/init vim mode', e);
@@ -169,13 +155,22 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
             folding: true,
             tabSize: 4,
             insertSpaces: true,
+            padding: { top: 14, bottom: 14 },
           }}
         />
       </div>
       {vimMode && (
           <div 
             ref={vimStatusRef} 
-            className="vim-status-bar"
+            style={{ 
+                height: '24px', 
+                backgroundColor: '#007acc', 
+                color: 'white', 
+                fontSize: '12px',
+                padding: '0 5px',
+                display: 'flex',
+                alignItems: 'center'
+            }} 
           />
       )}
     </div>
