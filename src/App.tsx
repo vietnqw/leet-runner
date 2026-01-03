@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { MonacoCodeEditor } from './components/MonacoCodeEditor';
 import { RunnerToolbar } from './components/RunnerToolbar';
+import { TestCasesPanel } from './components/TestCasesPanel';
 import { workspaceStorage } from './storage/workspaceStorage';
+import { TestCase } from './types';
 
 function App() {
   const [code, setCode] = useState(workspaceStorage.loadCode());
   const [methodName, setMethodName] = useState(workspaceStorage.loadMethod());
+  const [testCases, setTestCases] = useState<TestCase[]>(workspaceStorage.loadTestCases([]));
   const [isRunning, setIsRunning] = useState(false);
 
   const handleCodeChange = (newCode: string | undefined) => {
@@ -18,6 +21,11 @@ function App() {
   const handleMethodChange = (name: string) => {
     setMethodName(name);
     workspaceStorage.saveMethod(name);
+  };
+
+  const handleTestCasesChange = (newCases: TestCase[]) => {
+    setTestCases(newCases);
+    workspaceStorage.saveTestCases(newCases);
   };
 
   const handleRun = () => {
@@ -47,8 +55,7 @@ function App() {
 
         {/* Sidebar Section (Right) */}
         <div style={{ width: '400px', backgroundColor: '#252526', padding: '10px', display: 'flex', flexDirection: 'column' }}>
-          <h3>Test Cases</h3>
-          <p>Coming soon...</p>
+          <TestCasesPanel testCases={testCases} onChange={handleTestCasesChange} />
         </div>
       </div>
     </div>
