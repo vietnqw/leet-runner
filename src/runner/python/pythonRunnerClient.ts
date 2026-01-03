@@ -23,6 +23,8 @@ export class PythonRunnerClient implements LanguageRunner {
           this.onEvent({ type: 'error', error });
         } else if (type === 'loaded') {
             this.onEvent({ type: 'loaded' });
+        } else if (type === 'finished') {
+            this.onEvent({ type: 'finished' });
         }
       }
     };

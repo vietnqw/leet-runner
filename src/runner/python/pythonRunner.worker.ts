@@ -84,6 +84,7 @@ self.onmessage = async (e) => {
             result: { passed: false, actual: '', error: errorMsg, executionTime: 0 }
         });
       });
+      postMessage({ type: 'finished' });
       return;
     }
 
