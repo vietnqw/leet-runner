@@ -95,13 +95,20 @@ function App() {
   runRef.current = handleRun;
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runRef.current();
-      }
+      if (e.repeat || e.isComposing) return;
+      const isRunCombo =
+        (e.ctrlKey || e.metaKey) && (e.key === 'Enter' || e.code === 'NumpadEnter');
+      if (!isRunCombo) return;
+
+      // Use capture so Monaco (and other widgets) can't swallow the event.
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      runRef.current();
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    const opts: AddEventListenerOptions = { capture: true };
+    window.addEventListener('keydown', onKeyDown, opts);
+    return () => window.removeEventListener('keydown', onKeyDown, opts);
   }, []);
 
   const handleStop = () => {
@@ -158,7 +165,7 @@ function App() {
           paddingTop: '12px',
         }}>
           <div style={{ flex: 1, minHeight: 0 }}>
-            <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} onRun={handleRun} />
+            <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} />
           </div>
         </div>
 

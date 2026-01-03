@@ -11,7 +11,6 @@ interface MonacoCodeEditorProps {
   onChange: (value: string | undefined) => void;
   language?: string;
   vimMode?: boolean;
-  onRun?: () => void;
 }
 
 export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
@@ -19,7 +18,6 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
   onChange,
   language = 'python',
   vimMode = false,
-  onRun
 }) => {
   const [editor, setEditor] = useState<any>(null);
   const vimStatusRef = useRef<HTMLDivElement>(null);
@@ -28,16 +26,6 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
   const handleEditorDidMount = (editorInstance: any) => {
     setEditor(editorInstance);
     editorInstance.focus();
-
-    // Ctrl/Cmd + Enter => Run
-    if (onRun) {
-      editorInstance.addAction({
-        id: 'leetRunner.run',
-        label: 'Run (Ctrl+Enter)',
-        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
-        run: () => onRun(),
-      });
-    }
   };
 
   useEffect(() => {
