@@ -1,4 +1,5 @@
 import { PYTHON_HARNESS } from './harness';
+import { PYTHON_PRELUDE } from './prelude';
 
 type PyodideInterface = any;
 
@@ -57,6 +58,13 @@ self.onmessage = async (e) => {
     // Set streams
     pyodide.setStdout({ batched: handleStdout });
     pyodide.setStderr({ batched: handleStderr });
+
+    // 0. Load common prelude (typing/collections/etc) before user code
+    try {
+      pyodide.runPython(PYTHON_PRELUDE);
+    } catch (err) {
+      console.error('Prelude error', err);
+    }
 
     // 1. Exec user code
     let codeExecSuccess = true;
