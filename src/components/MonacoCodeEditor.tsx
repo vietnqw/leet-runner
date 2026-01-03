@@ -1,7 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Editor, { OnMount } from '@monaco-editor/react';
+import Editor, { OnMount, loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 // @ts-ignore
 import { initVimMode } from 'monaco-vim';
+
+// Configure loader to use local monaco instance instead of CDN
+// This ensures monaco-vim and the editor use the same instance
+loader.config({ monaco });
 
 interface MonacoCodeEditorProps {
   value: string;
