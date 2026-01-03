@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { MonacoCodeEditor } from './components/MonacoCodeEditor';
+import { workspaceStorage } from './storage/workspaceStorage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [code, setCode] = useState(workspaceStorage.loadCode());
+
+  const handleCodeChange = (newCode: string | undefined) => {
+    if (newCode !== undefined) {
+      setCode(newCode);
+      workspaceStorage.saveCode(newCode);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+      {/* Editor Section (Left) */}
+      <div style={{ flex: 1, borderRight: '1px solid #333' }}>
+        <MonacoCodeEditor value={code} onChange={handleCodeChange} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      {/* Sidebar Section (Right) - Placeholder for now */}
+      <div style={{ width: '400px', backgroundColor: '#252526', padding: '10px' }}>
+        <h3>Test Cases</h3>
+        <p>Coming soon...</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
