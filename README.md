@@ -1,27 +1,28 @@
-## Deploy to `vietngoquang.com/leet-runner` (GitHub Pages)
+## leet-runner
 
-Because `vietngoquang.com` is already a **custom domain** for your user Pages site (`vietnqw/vietnqw.github.io`), the simplest way to host this app at **`vietngoquang.com/leet-runner`** is:
+### Deploy to `vietngoquang.com/leet-runner`
 
-- Build this repo (`vietnqw/leet-runner`) with Vite
-- Copy the build output into the `leet-runner/` folder inside `vietnqw/vietnqw.github.io`
+Your custom domain `vietngoquang.com` is attached to your user Pages site repo `vietnqw/vietnqw.github.io`, so this app is deployed as a **subfolder** of that site:
 
-This repo includes a GitHub Actions workflow that does this automatically: `.github/workflows/deploy-to-vietnqw-github-io.yml`.
+- Build this repo with Vite
+- Copy `dist/` into `vietnqw.github.io` at `main/public/leet-runner/`
 
-### One-time setup
+This repo automates that copy via GitHub Actions: `.github/workflows/deploy-to-vietnqw-github-io.yml`.
 
-- **Create the repo**: `vietnqw/leet-runner` and push this code to its `main` branch.
-- **In repo `vietnqw/leet-runner`**, add a secret:
+#### One-time setup
+
+- **Repo**: push this code to `vietnqw/leet-runner` on branch `main`
+- **Secret in `vietnqw/leet-runner`**:
   - **Name**: `GH_PAGES_TOKEN`
-  - **Value**: a GitHub Personal Access Token (classic) that has permission to push to `vietnqw/vietnqw.github.io` (scope `repo` is the simplest)
-- **In repo `vietnqw/vietnqw.github.io`**:
-  - Ensure GitHub Pages is enabled and your custom domain `vietngoquang.com` is configured (you already have this).
+  - **Value**: GitHub PAT (classic) that can push to `vietnqw/vietnqw.github.io` (simplest scope: `repo`)
 
-### Deploy
+#### Deploy
 
-- Push to `main` in `vietnqw/leet-runner`, or run the workflow manually via **Actions**.
-- Your site will update at **`vietngoquang.com/leet-runner`** after the workflow finishes.
+- Run the workflow **“Deploy to vietngoquang.com/leet-runner”** (or push to `main`)
+- Then the `vietnqw/vietnqw.github.io` repo will deploy the site (it builds and publishes its `out/` output)
+- URL: `https://vietngoquang.com/leet-runner/`
 
-### Local dev
+#### Local dev
 
 ```bash
 npm install
