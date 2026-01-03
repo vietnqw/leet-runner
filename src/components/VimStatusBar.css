@@ -1,0 +1,78 @@
+.vim-status-bar {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  background: #18181b; /* Zinc-900 */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: #a1a1aa;
+  user-select: none;
+}
+
+/* The mode pill (first span) */
+.vim-status-bar > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 10px;
+  background: #3f3f46;
+  color: #fff;
+  transition: background 0.15s ease, color 0.15s ease;
+  min-width: 60px;
+}
+
+/* Secondary text (command buffer, etc) */
+.vim-status-bar > span:nth-child(2) {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #d4d4d8;
+}
+
+/* Key buffer (floated right by monaco-vim, we fix it) */
+.vim-status-bar > span:last-child {
+  margin-left: auto;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mode-specific colors based on data-mode attribute on container */
+
+/* NORMAL */
+.vim-status-bar[data-mode="normal"] > span:first-child {
+  background: #22c55e; /* Green-500 */
+  color: #000;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+}
+
+/* INSERT */
+.vim-status-bar[data-mode="insert"] > span:first-child {
+  background: #3b82f6; /* Blue-500 */
+  color: #fff;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+/* VISUAL (all variants) */
+.vim-status-bar[data-mode="visual"] > span:first-child {
+  background: #f97316; /* Orange-500 */
+  color: #fff;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.25);
+}
+
+/* REPLACE */
+.vim-status-bar[data-mode="replace"] > span:first-child {
+  background: #ef4444; /* Red-500 */
+  color: #fff;
+}
+
