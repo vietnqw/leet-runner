@@ -119,7 +119,20 @@ self.onmessage = async (e) => {
       const executionTime = endTime - startTime;
 
       // Combine stdout/stderr
-      const output = [...stdoutBuffer, ...stderrBuffer].join('').trim();
+      //
+      // NOTE:
+      // Pyodide's stdout "batched" callback can deliver output in chunks that
+      // don't reliably include newline characters (e.g. line-wise chunks).
+      // If we simply join(''), multi-line output can appear as a single line in the UI.
+      const combinedParts = [...stdoutBuffer, ...stderrBuffer];
+      const joined = combinedParts.join('');
+      const outputRaw =
+        !joined.includes('\n') &&
+        !joined.includes('\r') &&
+        combinedParts.length > 1
+          ? combinedParts.join('\n')
+          : joined;
+      const output = outputRaw.replace(/\r\n/g, '\n').trimEnd();
 
       if (result.error) {
          postMessage({
