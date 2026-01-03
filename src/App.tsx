@@ -12,6 +12,7 @@ function App() {
   const [code, setCode] = useState(workspaceStorage.loadCode());
   const [methodName, setMethodName] = useState(workspaceStorage.loadMethod());
   const [checkerId, setCheckerId] = useState(workspaceStorage.loadChecker());
+  const [vimMode, setVimMode] = useState(workspaceStorage.loadVimMode());
   const [testCases, setTestCases] = useState<TestCase[]>(workspaceStorage.loadTestCases([]));
   const [results, setResults] = useState<Record<string, TestResult>>({});
   const [isRunning, setIsRunning] = useState(false);
@@ -40,6 +41,11 @@ function App() {
   const handleCheckerChange = (id: string) => {
     setCheckerId(id);
     workspaceStorage.saveChecker(id);
+  };
+
+  const handleVimModeChange = (enabled: boolean) => {
+    setVimMode(enabled);
+    workspaceStorage.saveVimMode(enabled);
   };
 
   const handleTestCasesChange = (newCases: TestCase[]) => {
@@ -93,6 +99,8 @@ function App() {
         onMethodNameChange={handleMethodChange}
         checkerId={checkerId}
         onCheckerChange={handleCheckerChange}
+        vimMode={vimMode}
+        onVimModeChange={handleVimModeChange}
         onRun={handleRun}
         onStop={handleStop}
         isRunning={isRunning}
@@ -100,7 +108,7 @@ function App() {
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
         {/* Editor Section (Left) */}
         <div style={{ flex: 1, borderRight: '1px solid #333' }}>
-          <MonacoCodeEditor value={code} onChange={handleCodeChange} />
+          <MonacoCodeEditor value={code} onChange={handleCodeChange} vimMode={vimMode} />
         </div>
 
         {/* Sidebar Section (Right) */}

@@ -6,6 +6,8 @@ interface RunnerToolbarProps {
   onMethodNameChange: (name: string) => void;
   checkerId: string;
   onCheckerChange: (id: string) => void;
+  vimMode: boolean;
+  onVimModeChange: (enabled: boolean) => void;
   onRun: () => void;
   onStop: () => void;
   isRunning: boolean;
@@ -16,6 +18,8 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
   onMethodNameChange,
   checkerId,
   onCheckerChange,
+  vimMode,
+  onVimModeChange,
   onRun,
   onStop,
   isRunning
@@ -63,6 +67,17 @@ export const RunnerToolbar: React.FC<RunnerToolbarProps> = ({
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', paddingBottom: '2px' }}>
+         <label style={{ fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <input 
+                type="checkbox" 
+                checked={vimMode} 
+                onChange={(e) => onVimModeChange(e.target.checked)} 
+            />
+            <span style={{ color: '#aaa' }}>Vim Mode</span>
+         </label>
       </div>
 
       <div style={{ flex: 1 }} />
